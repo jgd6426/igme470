@@ -1,0 +1,81 @@
+/* Judy Derrick
+ * Final Project Testing
+ *
+ * Built and modified from Carlos Castellanos  SensorGraphASCII
+ */
+
+
+import processing.serial.*;
+
+Serial myPort; // Serial object
+
+float xPos = 0; // horizontal position of the graph
+float yPos = 0; // vertical position of the graph
+
+// Data received from the serial port
+int val;
+String inBuffer;
+
+void setup() {
+  size(1000, 1000); // window size
+ 
+  // List all the available serial ports
+  println(Serial.list());
+  // change the number below to match your port
+  String portName = Serial.list()[0];
+  // create a serial object
+  myPort = new Serial(this, portName, 9600);
+  // empty the serial buffer
+  myPort.clear();
+  // don't generate a serialEvent() until you get a newline character
+  myPort.bufferUntil('\n');
+  
+  // set the background color
+  background(240, 240, 240);
+}
+
+void draw() {
+  // draw random circles across the window
+  // change the color depending on light levels
+  
+  float randSize = random(200, 400);
+  float randX = random(1000);
+  float randY = random(1000);
+  
+  noStroke();
+  
+  if (val < 20) {
+    return;
+  }
+  else if (val >= 20 && val < 40) {
+    fill(190, 62, 130, 50);
+    circle(randX, randY, randSize);
+  }
+  else if (val >= 40 && val < 50) {
+    fill(228, 63, 111, 50);
+    circle(randX, randY, randSize);
+  }
+  else if (val >= 50 && val < 60) {
+    fill(245, 100, 118, 50);
+    circle(randX, randY, randSize);
+  }
+  else {
+    fill(201, 228, 231, 50);
+    circle(randX, randY, randSize);
+  }
+}
+
+void serialEvent(Serial s) {
+  // get the string
+  // Note: Every time you read a char, byte or string, it’s removed from
+  // the serial buffer. So it’s good practice to read the string into a 
+  // variable as shown below and immediately do something with that data 
+  // (like graph it, which we do in the draw() method). Then read another string.
+  String inBuffer = s.readStringUntil('\n');
+  
+  if (inBuffer != null) {
+    inBuffer = trim(inBuffer); // remove any possible white space characters
+    val = int(inBuffer); // get the latest string char & convert it to an int
+    println(val); // print it
+  }
+}
